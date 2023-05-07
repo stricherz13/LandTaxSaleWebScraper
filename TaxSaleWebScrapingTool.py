@@ -21,7 +21,6 @@ with open('CitySale216_p9.csv') as csv_file:
             s = BeautifulSoup(html.content, 'html.parser')
 
             results = s.findAll('td', string="No")
-            print(len(results))
             if len(results) > 0:
                 valid.append(row[0])
             else:
