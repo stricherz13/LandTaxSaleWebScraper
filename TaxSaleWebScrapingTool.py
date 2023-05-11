@@ -1,10 +1,23 @@
 # Created by: Brad Stricherz
 # Created on: May 5th, 2023
-# This script will use an imported CSV file and scrapes the web to check tax redemption status.
+# This script imports a CSV file and performs web scraping to check the tax redemption status for each entry in the file.
 
 import csv
 from bs4 import BeautifulSoup
 import requests
+import psycopg2
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+# Connect to the database
+conn = psycopg2.connect(
+    host=os.environ.get('HOST'),
+    database=os.environ.get('DATABASE'),
+    user=os.environ.get('USER'),
+    password=os.environ.get('PASSWORD')
+)
 
 valid = []
 redeemed = []
@@ -17,16 +30,22 @@ with open('CitySale216_p9.csv') as csv_file:
         if row[23] != '1116' and row[24] != '1185' and row[24] != '1115':
             url = f'https://dynamic.stlouis-mo.gov/citydata/newdesign/taxinfo.cfm?parcel9={row[94]}'
             html = requests.get(url)
-
             s = BeautifulSoup(html.content, 'html.parser')
-
             results = s.findAll('td', string="No")
-            if len(results) >= 3:
+            if len(results) >= 2:
                 valid.append(row[0])
             else:
                 redeemed.append(row[0])
         else:
             condo.append(row[0])
 
-print(redeemed)
-print(condo)
+print(f"Properties to be deleted: {redeemed}")
+print(f"Likely condos or multiunit properties: {condo}")
+
+for i in redeemed:
+    print(i)
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM "Sale216" WHERE land_id = %s', (i,))
+    print(f"Deleted {i}")
+    conn.commit()
+conn.close()
