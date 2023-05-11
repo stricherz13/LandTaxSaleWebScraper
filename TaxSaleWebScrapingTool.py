@@ -1,6 +1,8 @@
 # Created by: Brad Stricherz
 # Created on: May 5th, 2023
-# This script imports a CSV file and performs web scraping to check the tax redemption status for each entry in the file.
+# This script imports a CSV file and performs web scraping to check the tax redemption status for each entry in the
+# file. The script then deletes any entries that have been redeemed. The script also prints out a list of entries that
+# have been redeemed and a list of entries that are likely condos or multiunit properties.
 
 import csv
 from bs4 import BeautifulSoup
@@ -43,7 +45,6 @@ print(f"Properties to be deleted: {redeemed}")
 print(f"Likely condos or multiunit properties: {condo}")
 
 for i in redeemed:
-    print(i)
     cursor = conn.cursor()
     cursor.execute('DELETE FROM "Sale216" WHERE land_id = %s', (i,))
     print(f"Deleted {i}")
