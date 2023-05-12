@@ -32,12 +32,16 @@ with open('CitySale216_p9.csv') as csv_file:
         if row[23] != '1116' and row[24] != '1185' and row[24] != '1115':
             url = f'https://dynamic.stlouis-mo.gov/citydata/newdesign/taxinfo.cfm?parcel9={row[94]}'
             html = requests.get(url)
-            s = BeautifulSoup(html.content, 'html.parser')
-            results = s.findAll('td', string="No")
-            if len(results) >= 2:
-                valid.append(row[0])
+            if html.status_code == 200:
+                s = BeautifulSoup(html.content, 'html.parser')
+                results = s.findAll('td', string="No")
+                if len(results) >= 2:
+                    valid.append(row[0])
+                else:
+                    redeemed.append(row[0])
             else:
-                redeemed.append(row[0])
+                print(f"Error: {html.status_code}")
+                exit()
         else:
             condo.append(row[0])
 
