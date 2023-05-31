@@ -25,12 +25,13 @@ valid = []
 redeemed = []
 condo = []
 
-with open('CitySale216_p9.csv') as csv_file:
+# Open the CSV file and read the data
+with open('CitySale217_P9.csv') as csv_file:
     csv_reader = csv.reader(csv_file)
     next(csv_reader)  # skip the header row
     for row in csv_reader:
-        if row[23] != '1116' and row[24] != '1185' and row[24] != '1115':
-            url = f'https://dynamic.stlouis-mo.gov/citydata/newdesign/taxinfo.cfm?parcel9={row[94]}'
+        if row[22] != '1116' and row[22] != '1114' and row[23] != '1185' and row[23] != '1115' and row[6] != 'LRA':
+            url = f'https://dynamic.stlouis-mo.gov/citydata/newdesign/taxinfo.cfm?parcel9={row[95]}'
             html = requests.get(url)
             if html.status_code == 200:
                 s = BeautifulSoup(html.content, 'html.parser')
@@ -48,9 +49,10 @@ with open('CitySale216_p9.csv') as csv_file:
 print(f"Properties to be deleted: {redeemed}")
 print(f"Likely condos or multiunit properties: {condo}")
 
-for i in redeemed:
-    cursor = conn.cursor()
-    cursor.execute('DELETE FROM "Sale216" WHERE land_id = %s', (i,))
-    print(f"Deleted {i}")
-    conn.commit()
-conn.close()
+# for i in redeemed:
+#     cursor = conn.cursor()
+#     # update the table name and column name
+#     cursor.execute('DELETE FROM "stlouiscity2023" WHERE landtaxid = %s', (i,))
+#     print(f"Deleted {i}")
+#     conn.commit()
+# conn.close()
